@@ -1,2 +1,30 @@
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
-export function AppTabs(){return <NativeTabs tintColor="#ff624f" iconColor={{default:'#f5f4f0',selected:'#ff624f'}} labelStyle={{fontSize:11}} backgroundColor="#242122" blurEffect="systemChromeMaterialDark" disableTransparentOnScrollEdge><NativeTabs.Trigger name="index"><NativeTabs.Trigger.Icon sf="gamecontroller" md="sports_esports"/><NativeTabs.Trigger.Label>Games</NativeTabs.Trigger.Label></NativeTabs.Trigger><NativeTabs.Trigger name="backlog"><NativeTabs.Trigger.Icon sf="rectangle.stack" md="stacks"/><NativeTabs.Trigger.Label>Backlog</NativeTabs.Trigger.Label></NativeTabs.Trigger><NativeTabs.Trigger name="profile"><NativeTabs.Trigger.Icon sf="person.crop.circle" md="account_circle"/><NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label></NativeTabs.Trigger><NativeTabs.Trigger name="search" role="search"><NativeTabs.Trigger.Icon sf="magnifyingglass" md="search"/><NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label></NativeTabs.Trigger></NativeTabs>;}
+import { NativeTabs } from "expo-router/unstable-native-tabs";
+export function AppTabs() {
+  return (
+    <NativeTabs
+      tintColor="#ff624f"
+      iconColor={{ default: "#f5f4f0", selected: "#ff624f" }}
+      labelStyle={{ fontSize: 11 }}
+      backgroundColor="#242122"
+      blurEffect="systemChromeMaterialDark"
+      disableTransparentOnScrollEdge
+    >
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon sf="gamecontroller" md="sports_esports" />
+        <NativeTabs.Trigger.Label>Games</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="backlog">
+        <NativeTabs.Trigger.Icon sf="rectangle.stack" md="stacks" />
+        <NativeTabs.Trigger.Label>Backlog</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Icon sf="person.crop.circle" md="account_circle" />
+        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search">
+        <NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
+        <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}

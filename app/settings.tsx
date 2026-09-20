@@ -1,5 +1,76 @@
-import { useState } from 'react';
-import { router } from 'expo-router';
-import { ScrollView, Text, TextInput, Pressable, View } from 'react-native';
-import { useLibrary } from '@/state/library';
-export default function Settings(){const s=useLibrary();const [name,setName]=useState(s.name);const [handle,setHandle]=useState(s.handle);return <ScrollView className="flex-1 bg-canvas" keyboardShouldPersistTaps="handled" contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{padding:24,paddingBottom:80}}><Text className="mb-8 text-ink text-2xl font-semibold">Make it yours</Text><Text className="mb-2 text-muted">Display name</Text><TextInput accessibilityLabel="Display name" value={name} onChangeText={setName} maxLength={36} style={{padding:16,borderRadius:16,backgroundColor:'#1c191a',color:'#f5f4f0',fontSize:17}}/><Text className="mb-2 mt-6 text-muted">Username</Text><TextInput accessibilityLabel="Username" value={handle} onChangeText={text=>setHandle(text.replace(/[^a-zA-Z0-9_]/g,''))} autoCapitalize="none" autoCorrect={false} maxLength={24} style={{padding:16,borderRadius:16,backgroundColor:'#1c191a',color:'#f5f4f0',fontSize:17}}/><Pressable accessibilityRole="button" disabled={!name.trim()||!handle.trim()} onPress={()=>{s.profile(name.trim(),handle.trim());router.back();}} className="mt-8 items-center rounded-full bg-coral py-4" style={{opacity:!name.trim()||!handle.trim()?.4:1}}><Text style={{color:'#180e0b',fontSize:17,fontWeight:'600'}}>Save profile</Text></Pressable><View className="mt-10 gap-3"><Text className="text-ink text-lg font-semibold">Your personal game journal</Text><Text className="text-muted" style={{lineHeight:23}}>Gamefolio keeps your collection, progress and notes on this device. The starter library is sample data you can edit. Cloud accounts, social features and storefront syncing are not connected.</Text><Text className="mt-4 text-muted text-xs">GAMEFOLIO · 1.0</Text></View></ScrollView>;}
+import { useState } from "react";
+import { router } from "expo-router";
+import { ScrollView, Text, TextInput, Pressable, View } from "react-native";
+import { useLibrary } from "@/state/library";
+export default function Settings() {
+  const s = useLibrary();
+  const [name, setName] = useState(s.name);
+  const [handle, setHandle] = useState(s.handle);
+  return (
+    <ScrollView
+      className="flex-1 bg-canvas"
+      keyboardShouldPersistTaps="handled"
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: 24, paddingBottom: 80 }}
+    >
+      <Text className="mb-8 text-ink text-2xl font-semibold">
+        Make it yours
+      </Text>
+      <Text className="mb-2 text-muted">Display name</Text>
+      <TextInput
+        accessibilityLabel="Display name"
+        value={name}
+        onChangeText={setName}
+        maxLength={36}
+        style={{
+          padding: 16,
+          borderRadius: 16,
+          backgroundColor: "#1c191a",
+          color: "#f5f4f0",
+          fontSize: 17,
+        }}
+      />
+      <Text className="mb-2 mt-6 text-muted">Username</Text>
+      <TextInput
+        accessibilityLabel="Username"
+        value={handle}
+        onChangeText={(text) => setHandle(text.replace(/[^a-zA-Z0-9_]/g, ""))}
+        autoCapitalize="none"
+        autoCorrect={false}
+        maxLength={24}
+        style={{
+          padding: 16,
+          borderRadius: 16,
+          backgroundColor: "#1c191a",
+          color: "#f5f4f0",
+          fontSize: 17,
+        }}
+      />
+      <Pressable
+        accessibilityRole="button"
+        disabled={!name.trim() || !handle.trim()}
+        onPress={() => {
+          s.profile(name.trim(), handle.trim());
+          router.back();
+        }}
+        className="mt-8 items-center rounded-full bg-coral py-4"
+        style={{ opacity: !name.trim() || !handle.trim() ? 0.4 : 1 }}
+      >
+        <Text style={{ color: "#180e0b", fontSize: 17, fontWeight: "600" }}>
+          Save profile
+        </Text>
+      </Pressable>
+      <View className="mt-10 gap-3">
+        <Text className="text-ink text-lg font-semibold">
+          Your personal game journal
+        </Text>
+        <Text className="text-muted" style={{ lineHeight: 23 }}>
+          Gamefolio keeps your collection, progress and notes on this device.
+          The starter library is sample data you can edit. Cloud accounts,
+          social features and storefront syncing are not connected.
+        </Text>
+        <Text className="mt-4 text-muted text-xs">GAMEFOLIO · 1.0</Text>
+      </View>
+    </ScrollView>
+  );
+}

@@ -1,11 +1,173 @@
-import { ScrollView, View, Text, Pressable, useWindowDimensions } from 'react-native';
-import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLibrary } from '@/state/library';
-import { games, hero } from '@/data/games';
-import { GlassButton } from '@/ui/glass-button';
-import { Icon } from '@/ui/icon';
-import { GameCard } from '@/components/game-card';
-export default function Profile(){const s=useLibrary();const insets=useSafeAreaInsets();const {width}=useWindowDimensions();const library=games.filter(g=>s.entries[g.id]);const favorites=library.filter(g=>s.entries[g.id].favorite);const hours=Object.values(s.entries).reduce((sum,g)=>sum+g.hours,0);const completed=Object.values(s.entries).filter(g=>g.status==='completed').length;
-return <ScrollView className="flex-1 bg-canvas" contentInsetAdjustmentBehavior="never" showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:140}}><View style={{height:242,backgroundColor:'#242122',paddingTop:Math.max(insets.top,48)+10,paddingHorizontal:16}}><View className="flex-row justify-between"><GlassButton icon="bell" label="Release calendar" onPress={()=>router.push('/calendar')}/><GlassButton icon="more" label="Edit profile" onPress={()=>router.push('/settings')}/></View></View><View className="px-5"><View style={{width:96,height:96,borderRadius:50,borderWidth:4,borderColor:'#0c0a0b',overflow:'hidden',marginTop:-44,backgroundColor:'#372e2b'}}><Image source={hero(games[0])} style={{width:'100%',height:'100%'}} contentFit="cover"/><View style={{position:'absolute',inset:0,alignItems:'center',justifyContent:'center',backgroundColor:'#00000025'}}><Icon name="game" size={44}/></View></View><Text selectable className="mt-4 text-ink font-bold" style={{fontSize:23}}>{s.name}</Text><Text selectable className="mt-1 text-muted" style={{fontSize:16}}>@{s.handle}</Text><Text className="mt-5 text-muted" style={{fontSize:15}}>Your games. Your stories.</Text></View><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingHorizontal:20,gap:12,paddingTop:26,paddingBottom:36}}>{[['PLAY TIME',`${Math.floor(hours/24)}d ${hours%24}h`],['COMPLETED',`${completed}`],['COLLECTION',`${library.length}`]].map(([label,value])=><View key={label} className="rounded-[18px] bg-surface px-4 py-4" style={{width:146,height:94,justifyContent:'space-between'}}><Text className="text-muted text-xs">{label}</Text><Text selectable className="text-ink font-bold" style={{fontSize:24,fontVariant:['tabular-nums']}}>{value}</Text></View>)}</ScrollView>{[['Games',library],['Favorite games',favorites]] .map(([label,data])=>{const list=data as typeof games;return <View key={label as string} className="mb-10"><Pressable accessibilityRole="button" onPress={()=>router.navigate('/')} className="mb-3 flex-row items-center justify-between px-5"><Text className="text-ink font-semibold" style={{fontSize:24}}>{label as string}</Text><View className="flex-row items-center gap-2"><Text className="text-muted text-base">{list.length}</Text><Icon name="right" color="#928c8e" size={17}/></View></Pressable><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingHorizontal:20,gap:12}}>{list.map(game=><GameCard key={game.id} game={game} entry={s.entries[game.id]} width={(width-64)/3}/>)}{!list.length&&<Text className="text-muted">Tap the heart on a game to add a favorite.</Text>}</ScrollView></View>;})}</ScrollView>;}
+import {
+  ScrollView,
+  View,
+  Text,
+  Pressable,
+  useWindowDimensions,
+} from "react-native";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLibrary } from "@/state/library";
+import { games, hero } from "@/data/games";
+import { GlassButton } from "@/ui/glass-button";
+import { Icon } from "@/ui/icon";
+import { GameCard } from "@/components/game-card";
+export default function Profile() {
+  const s = useLibrary();
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const library = games.filter((g) => s.entries[g.id]);
+  const favorites = library.filter((g) => s.entries[g.id].favorite);
+  const hours = Object.values(s.entries).reduce((sum, g) => sum + g.hours, 0);
+  const completed = Object.values(s.entries).filter(
+    (g) => g.status === "completed",
+  ).length;
+  return (
+    <ScrollView
+      className="flex-1 bg-canvas"
+      contentInsetAdjustmentBehavior="never"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 140 }}
+    >
+      <View
+        style={{
+          height: 242,
+          backgroundColor: "#242122",
+          paddingTop: Math.max(insets.top, 48) + 10,
+          paddingHorizontal: 16,
+        }}
+      >
+        <View className="flex-row justify-between">
+          <GlassButton
+            icon="bell"
+            label="Release calendar"
+            onPress={() => router.push("/calendar")}
+          />
+          <GlassButton
+            icon="more"
+            label="Edit profile"
+            onPress={() => router.push("/settings")}
+          />
+        </View>
+      </View>
+      <View className="px-5">
+        <View
+          style={{
+            width: 96,
+            height: 96,
+            borderRadius: 50,
+            borderWidth: 4,
+            borderColor: "#0c0a0b",
+            overflow: "hidden",
+            marginTop: -44,
+            backgroundColor: "#372e2b",
+          }}
+        >
+          <Image
+            source={hero(games[0])}
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
+          />
+          <View
+            style={{
+              position: "absolute",
+              inset: 0,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#00000025",
+            }}
+          >
+            <Icon name="game" size={44} />
+          </View>
+        </View>
+        <Text
+          selectable
+          className="mt-4 text-ink font-bold"
+          style={{ fontSize: 23 }}
+        >
+          {s.name}
+        </Text>
+        <Text selectable className="mt-1 text-muted" style={{ fontSize: 16 }}>
+          @{s.handle}
+        </Text>
+        <Text className="mt-5 text-muted" style={{ fontSize: 15 }}>
+          Your games. Your stories.
+        </Text>
+      </View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          gap: 12,
+          paddingTop: 26,
+          paddingBottom: 36,
+        }}
+      >
+        {[
+          ["PLAY TIME", `${Math.floor(hours / 24)}d ${hours % 24}h`],
+          ["COMPLETED", `${completed}`],
+          ["COLLECTION", `${library.length}`],
+        ].map(([label, value]) => (
+          <View
+            key={label}
+            className="rounded-[18px] bg-surface px-4 py-4"
+            style={{ width: 146, height: 94, justifyContent: "space-between" }}
+          >
+            <Text className="text-muted text-xs">{label}</Text>
+            <Text
+              selectable
+              className="text-ink font-bold"
+              style={{ fontSize: 24, fontVariant: ["tabular-nums"] }}
+            >
+              {value}
+            </Text>
+          </View>
+        ))}
+      </ScrollView>
+      {[
+        ["Games", library],
+        ["Favorite games", favorites],
+      ].map(([label, data]) => {
+        const list = data as typeof games;
+        return (
+          <View key={label as string} className="mb-10">
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.navigate("/")}
+              className="mb-3 flex-row items-center justify-between px-5"
+            >
+              <Text className="text-ink font-semibold" style={{ fontSize: 24 }}>
+                {label as string}
+              </Text>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-muted text-base">{list.length}</Text>
+                <Icon name="right" color="#928c8e" size={17} />
+              </View>
+            </Pressable>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
+            >
+              {list.map((game) => (
+                <GameCard
+                  key={game.id}
+                  game={game}
+                  entry={s.entries[game.id]}
+                  width={(width - 64) / 3}
+                />
+              ))}
+              {!list.length && (
+                <Text className="text-muted">
+                  Tap the heart on a game to add a favorite.
+                </Text>
+              )}
+            </ScrollView>
+          </View>
+        );
+      })}
+    </ScrollView>
+  );
+}

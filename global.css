@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'uniwind';
+@import "tailwindcss";
+@import "uniwind";
 @theme {
   --color-canvas: #0c0a0b;
   --color-surface: #1c191a;

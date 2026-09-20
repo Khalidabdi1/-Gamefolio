@@ -1,2 +1,2 @@
-import { LibraryScreen } from '@/screens/library-screen';
+import { LibraryScreen } from "@/screens/library-screen";
 export default LibraryScreen;

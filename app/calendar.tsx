@@ -1,5 +1,41 @@
-import { ScrollView, Text, View } from 'react-native';
-import { games } from '@/data/games';
-import { GameRow } from '@/components/game-card';
-import { useLibrary } from '@/state/library';
-export default function Calendar(){const s=useLibrary();const collection=games.filter(g=>s.entries[g.id]).sort((a,b)=>b.released.localeCompare(a.released));return <ScrollView className="flex-1 bg-canvas" contentInsetAdjustmentBehavior="automatic" contentContainerStyle={{padding:20,paddingBottom:50}}><Text className="mb-2 text-ink text-2xl font-semibold">From your collection</Text><Text className="mb-7 text-muted" style={{lineHeight:22}}>Original release dates from the starter catalog. Live upcoming releases are not connected yet.</Text>{collection.map(game=><View key={game.id} className="mb-5"><Text className="mb-2 text-muted">{new Date(`${game.released}T12:00:00Z`).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'UTC'})}</Text><GameRow game={game} entry={s.entries[game.id]}/></View>)}</ScrollView>;}
+import { ScrollView, Text, View } from "react-native";
+import { games } from "@/data/games";
+import { GameRow } from "@/components/game-card";
+import { useLibrary } from "@/state/library";
+export default function Calendar() {
+  const s = useLibrary();
+  const collection = games
+    .filter((g) => s.entries[g.id])
+    .sort((a, b) => b.released.localeCompare(a.released));
+  return (
+    <ScrollView
+      className="flex-1 bg-canvas"
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: 20, paddingBottom: 50 }}
+    >
+      <Text className="mb-2 text-ink text-2xl font-semibold">
+        From your collection
+      </Text>
+      <Text className="mb-7 text-muted" style={{ lineHeight: 22 }}>
+        Original release dates from the starter catalog. Live upcoming releases
+        are not connected yet.
+      </Text>
+      {collection.map((game) => (
+        <View key={game.id} className="mb-5">
+          <Text className="mb-2 text-muted">
+            {new Date(`${game.released}T12:00:00Z`).toLocaleDateString(
+              "en-US",
+              {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              },
+            )}
+          </Text>
+          <GameRow game={game} entry={s.entries[game.id]} />
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
