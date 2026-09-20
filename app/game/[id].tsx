@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import {
   ScrollView,
@@ -22,6 +23,7 @@ export default function GameDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const game = games.find((g) => g.id === id);
   const s = useLibrary();
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const insets = useSafeAreaInsets();
   if (!game)
     return (
@@ -232,8 +234,7 @@ export default function GameDetails() {
               className="mt-8 items-center py-4"
               onPress={() => {
                 if (process.env.EXPO_OS === "web") {
-                  s.remove(game.id);
-                  router.back();
+                  setConfirmRemove(true);
                 } else
                   Alert.alert(
                     "Remove from library?",
@@ -245,7 +246,9 @@ export default function GameDetails() {
                         style: "destructive",
                         onPress: () => {
                           s.remove(game.id);
-                          router.back();
+                          router.canGoBack()
+                            ? router.back()
+                            : router.replace("/");
                         },
                       },
                     ],
@@ -254,6 +257,34 @@ export default function GameDetails() {
             >
               <Text className="text-coral">Remove from library</Text>
             </Pressable>
+            {confirmRemove && (
+              <View
+                accessibilityRole="alert"
+                className="gap-4 rounded-2xl bg-surface p-5"
+              >
+                <Text className="text-ink">
+                  Remove this game and its saved progress and notes?
+                </Text>
+                <View className="flex-row justify-end gap-6">
+                  <Pressable
+                    onPress={() => setConfirmRemove(false)}
+                    className="py-3"
+                  >
+                    <Text className="text-ink">Cancel</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityLabel="Confirm remove game"
+                    onPress={() => {
+                      s.remove(game.id);
+                      router.canGoBack() ? router.back() : router.replace("/");
+                    }}
+                    className="py-3"
+                  >
+                    <Text className="text-coral">Remove</Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
           </>
         )}
       </View>

@@ -91,9 +91,14 @@ export default function Profile() {
         <Text selectable className="mt-1 text-muted" style={{ fontSize: 16 }}>
           @{s.handle}
         </Text>
-        <Text className="mt-5 text-muted" style={{ fontSize: 15 }}>
-          Your games. Your stories.
-        </Text>
+        <View className="mt-5 flex-row gap-5">
+          <Text className="text-muted" style={{ fontSize: 16 }}>
+            <Text className="font-semibold text-ink">0</Text> Following
+          </Text>
+          <Text className="text-muted" style={{ fontSize: 16 }}>
+            <Text className="font-semibold text-ink">0</Text> Followers
+          </Text>
+        </View>
       </View>
       <ScrollView
         horizontal
