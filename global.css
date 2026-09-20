@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+@import 'uniwind';
+@theme {
+  --color-canvas: #0c0a0b;
+  --color-surface: #1c191a;
+  --color-raised: #262324;
+  --color-ink: #f5f4f0;
+  --color-muted: #928c8e;
+  --color-coral: #ff624f;
+}

@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Gamefolio",
+    "slug": "gamefolio",
+    "version": "1.0.0",
+    "scheme": "gamefolio",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.gamefolio.app"
+    },
+    "android": {
+      "package": "com.gamefolio.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-image",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
