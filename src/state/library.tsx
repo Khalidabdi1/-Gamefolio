@@ -9,60 +9,13 @@ import {
 } from "react";
 import {
   emptyEntry,
-  games,
-  initialEntries,
-  statuses,
   type Entry,
   type Status,
   type ViewMode,
 } from "@/data/games";
 
-type LibraryState = {
-  entries: Record<string, Entry>;
-  view: ViewMode;
-  filters: Status[];
-  genre: string;
-  name: string;
-  handle: string;
-};
-const initial: LibraryState = {
-  entries: initialEntries,
-  view: "grid",
-  filters: ["playing", "paused", "backlog", "wishlist"],
-  genre: "All genres",
-  name: "KHALID KALIB",
-  handle: "abdi",
-};
+import { initial, restore, type LibraryState } from "./library-model";
 const KEY = "gamefolio.library.v1";
-function restore(raw: string): LibraryState {
-  const saved = JSON.parse(raw);
-  if (!saved || typeof saved !== "object" || !saved.entries)
-    throw new Error("Invalid library");
-  const entries: Record<string, Entry> = {};
-  for (const game of games) {
-    const entry = saved.entries[game.id];
-    if (!entry || !statuses.some((s) => s.id === entry.status)) continue;
-    entries[game.id] = {
-      ...emptyEntry(entry.status),
-      hours: Math.max(0, Number(entry.hours) || 0),
-      progress: Math.max(0, Math.min(100, Number(entry.progress) || 0)),
-      favorite: entry.favorite === true,
-      rating: Math.max(0, Math.min(5, Number(entry.rating) || 0)),
-      notes: typeof entry.notes === "string" ? entry.notes : "",
-    };
-  }
-  return {
-    ...initial,
-    entries,
-    view: ["grid", "cards", "list"].includes(saved.view) ? saved.view : "grid",
-    filters: Array.isArray(saved.filters)
-      ? saved.filters.filter((id: Status) => statuses.some((s) => s.id === id))
-      : initial.filters,
-    genre: typeof saved.genre === "string" ? saved.genre : initial.genre,
-    name: typeof saved.name === "string" ? saved.name : initial.name,
-    handle: typeof saved.handle === "string" ? saved.handle : initial.handle,
-  };
-}
 type Store = LibraryState & {
   ready: boolean;
   error: string | null;

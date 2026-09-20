@@ -6,7 +6,7 @@ import { useLibrary } from "@/state/library";
 import { games, statuses, type ViewMode } from "@/data/games";
 import { GlassButton } from "@/ui/glass-button";
 import { Icon } from "@/ui/icon";
-export function FilterMenu() {
+export function FilterMenu({ showView = true }: { showView?: boolean }) {
   const [open, setOpen] = useState(false);
   const [genres, setGenres] = useState(false);
   const s = useLibrary();
@@ -48,26 +48,30 @@ export function FilterMenu() {
               tint="dark"
               style={{ padding: 22, backgroundColor: "#262426ec" }}
             >
-              <Text className="mb-3 text-muted">View</Text>
-              <View className="mb-5 flex-row justify-between">
-                {(["list", "cards", "grid"] as ViewMode[]).map((mode) => (
-                  <Pressable
-                    key={mode}
-                    accessibilityLabel={`${mode} view`}
-                    accessibilityState={{ selected: s.view === mode }}
-                    onPress={() => s.setView(mode)}
-                    className="items-center justify-center rounded-xl"
-                    style={{
-                      width: 42,
-                      height: 40,
-                      backgroundColor:
-                        s.view === mode ? "#ffffff13" : "transparent",
-                    }}
-                  >
-                    <Icon name={mode} size={21} />
-                  </Pressable>
-                ))}
-              </View>
+              {showView && (
+                <>
+                  <Text className="mb-3 text-muted">View</Text>
+                  <View className="mb-5 flex-row justify-between">
+                    {(["list", "cards", "grid"] as ViewMode[]).map((mode) => (
+                      <Pressable
+                        key={mode}
+                        accessibilityLabel={`${mode} view`}
+                        accessibilityState={{ selected: s.view === mode }}
+                        onPress={() => s.setView(mode)}
+                        className="items-center justify-center rounded-xl"
+                        style={{
+                          width: 42,
+                          height: 40,
+                          backgroundColor:
+                            s.view === mode ? "#ffffff13" : "transparent",
+                        }}
+                      >
+                        <Icon name={mode} size={21} />
+                      </Pressable>
+                    ))}
+                  </View>
+                </>
+              )}
               <Text className="mb-2 text-muted">
                 {genres ? "Genre" : "Status"}
               </Text>

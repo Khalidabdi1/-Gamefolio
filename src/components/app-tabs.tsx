@@ -9,19 +9,23 @@ export function AppTabs() {
       blurEffect="systemChromeMaterialDark"
       disableTransparentOnScrollEdge
     >
-      <NativeTabs.Trigger name="index">
+      <NativeTabs.Trigger disableAutomaticContentInsets name="index">
         <NativeTabs.Trigger.Icon sf="gamecontroller" md="sports_esports" />
         <NativeTabs.Trigger.Label>Games</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="backlog">
+      <NativeTabs.Trigger disableAutomaticContentInsets name="backlog">
         <NativeTabs.Trigger.Icon sf="rectangle.stack" md="stacks" />
         <NativeTabs.Trigger.Label>Backlog</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
+      <NativeTabs.Trigger disableAutomaticContentInsets name="profile">
         <NativeTabs.Trigger.Icon sf="person.crop.circle" md="account_circle" />
         <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="search" role="search">
+      <NativeTabs.Trigger
+        disableAutomaticContentInsets
+        name="search"
+        role="search"
+      >
         <NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
         <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>

@@ -21,8 +21,10 @@ export function LibraryScreen({ backlog = false }: { backlog?: boolean }) {
       games: selected.filter((g) => s.entries[g.id].status === status.id),
     }))
     .filter((x) => x.games.length);
-  const queued = selected.filter((g) =>
-    ["backlog", "wishlist", "completed"].includes(s.entries[g.id].status),
+  const queued = selected.filter(
+    (g) =>
+      ["backlog", "wishlist", "completed"].includes(s.entries[g.id].status) &&
+      s.filters.includes(s.entries[g.id].status),
   );
   return (
     <ScrollView
@@ -36,7 +38,7 @@ export function LibraryScreen({ backlog = false }: { backlog?: boolean }) {
       }}
     >
       <View className="mb-7 flex-row items-center justify-between px-4">
-        <FilterMenu />
+        <FilterMenu showView={!backlog} />
         {backlog && (
           <Text className="text-ink text-lg font-semibold">Play next</Text>
         )}

@@ -13,7 +13,13 @@ export function AppTabs() {
   return (
     <Tabs style={{ flex: 1, backgroundColor: "#0c0a0b" }}>
       <TabSlot />
-      <TabList
+      <TabList style={{ display: "none" }}>
+        {items.map(([name, href]) => (
+          <TabTrigger key={name} name={name} href={href as "/"} />
+        ))}
+        <TabTrigger name="search" href="/search" />
+      </TabList>
+      <View
         style={{
           position: "absolute",
           bottom: 20,
@@ -42,7 +48,6 @@ export function AppTabs() {
             <TabTrigger
               key={name}
               name={name}
-              href={href as "/"}
               style={{
                 flex: 1,
                 alignItems: "center",
@@ -72,7 +77,6 @@ export function AppTabs() {
         </BlurView>
         <TabTrigger
           name="search"
-          href="/search"
           accessibilityLabel="Search games"
           style={{
             width: 62,
@@ -101,7 +105,7 @@ export function AppTabs() {
             />
           </BlurView>
         </TabTrigger>
-      </TabList>
+      </View>
     </Tabs>
   );
 }

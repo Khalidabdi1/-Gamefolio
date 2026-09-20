@@ -7,7 +7,7 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { useLibrary } from "@/state/library";
 import { games, statuses, type ViewMode } from "@/data/games";
-export function FilterMenu() {
+export function FilterMenu({ showView = true }: { showView?: boolean }) {
   const s = useLibrary();
   return (
     <Host matchContents colorScheme="dark">
@@ -21,24 +21,26 @@ export function FilterMenu() {
           tint("#f5f4f0"),
         ]}
       >
-        <Section title="View">
-          <ControlGroup>
-            {(
-              [
-                ["list", "list.bullet"],
-                ["cards", "rectangle.grid.1x2"],
-                ["grid", "square.grid.2x2"],
-              ] as const
-            ).map(([id, icon]) => (
-              <Button
-                key={id}
-                label={`${id}${s.view === id ? " ✓" : ""}`}
-                systemImage={icon}
-                onPress={() => s.setView(id as ViewMode)}
-              />
-            ))}
-          </ControlGroup>
-        </Section>
+        {showView && (
+          <Section title="View">
+            <ControlGroup>
+              {(
+                [
+                  ["list", "list.bullet"],
+                  ["cards", "rectangle.grid.1x2"],
+                  ["grid", "square.grid.2x2"],
+                ] as const
+              ).map(([id, icon]) => (
+                <Button
+                  key={id}
+                  label={`${id}${s.view === id ? " ✓" : ""}`}
+                  systemImage={icon}
+                  onPress={() => s.setView(id as ViewMode)}
+                />
+              ))}
+            </ControlGroup>
+          </Section>
+        )}
         <Section title="Status">
           {statuses.map((item) => (
             <Button

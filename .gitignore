@@ -39,3 +39,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Preview and native-sim local sessions
+web-dist/
+ios-dist/
+.native-sim/
+build/
+.env
+.env.*
