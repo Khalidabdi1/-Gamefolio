@@ -8,7 +8,12 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "export:web": "expo export --platform web"
+    "export:web": "expo export --platform web --output-dir web-dist",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "check": "npm run typecheck && npm test",
+    "export:ios": "expo export --platform ios --output-dir ios-dist",
+    "sim": "npx native-sim@0.1.0 up --public --agent --minutes 45",
+    "format:check": "prettier --check \"app/**/*.tsx\" \"src/**/*.{ts,tsx}\" \"tests/*.ts\""
   },
   "dependencies": {
     "@expo/ui": "~55.0.17",
@@ -37,6 +42,7 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "prettier": "^3.9.8",
+    "tsx": "^4.23.15",
     "typescript": "~5.9.2"
   },
   "private": true
