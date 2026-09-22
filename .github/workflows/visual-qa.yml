@@ -1,3 +1,4 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 name: Visual QA
 
 on:
@@ -20,7 +21,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
@@ -111,7 +112,7 @@ jobs:
         run: |
           npm install -g agent-device@0.20.1
           agent-device prepare ios-runner --platform ios --timeout 900000
-          agent-device open com.gamefolio.app --platform ios --serial "$UDID"
+          agent-device open com.gamefolio.app --platform ios
           agent-device wait 8000
           mkdir -p visual-qa
 
