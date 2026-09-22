@@ -2,6 +2,7 @@ import { Host, Button } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
   controlSize,
+  font,
   labelStyle,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
@@ -17,6 +18,7 @@ export function GlassButton({ icon, label, onPress }: GlassButtonProps) {
         modifiers={[
           buttonStyle("glass"),
           controlSize("large"),
+          font({ size: 21, weight: "medium" }),
           labelStyle("iconOnly"),
           tint("#f5f4f0"),
         ]}

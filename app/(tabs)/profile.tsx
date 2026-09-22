@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLibrary } from "@/state/library";
 import { games, hero } from "@/data/games";
 import { GlassButton } from "@/ui/glass-button";
@@ -15,7 +14,6 @@ import { Icon } from "@/ui/icon";
 import { GameCard } from "@/components/game-card";
 export default function Profile() {
   const s = useLibrary();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const library = games.filter((g) => s.entries[g.id]);
   const favorites = library.filter((g) => s.entries[g.id].favorite);
@@ -34,7 +32,7 @@ export default function Profile() {
         style={{
           height: 242,
           backgroundColor: "#242122",
-          paddingTop: Math.max(insets.top, 48) + 10,
+          paddingTop: process.env.EXPO_OS === "web" ? 58 : 10,
           paddingHorizontal: 16,
         }}
       >

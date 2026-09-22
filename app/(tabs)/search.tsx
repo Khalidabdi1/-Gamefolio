@@ -7,7 +7,6 @@ import {
   Pressable,
   useWindowDimensions,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { games } from "@/data/games";
 import { GameCard } from "@/components/game-card";
 import { useLibrary } from "@/state/library";
@@ -16,7 +15,6 @@ export default function Search() {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState("All");
   const { width } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
   const s = useLibrary();
   const found = useMemo(
     () =>
@@ -34,7 +32,7 @@ export default function Search() {
       className="flex-1 bg-canvas"
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={{
-        paddingTop: Math.max(insets.top, 48) + 20,
+        paddingTop: process.env.EXPO_OS === "web" ? 68 : 20,
         paddingBottom: 140,
       }}
     >

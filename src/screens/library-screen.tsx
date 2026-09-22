@@ -1,6 +1,5 @@
 import { ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { games, statuses } from "@/data/games";
 import { useLibrary } from "@/state/library";
 import { GameCard, GameRow } from "@/components/game-card";
@@ -8,7 +7,6 @@ import { FilterMenu } from "@/components/filter-menu";
 import { GlassButton } from "@/ui/glass-button";
 export function LibraryScreen({ backlog = false }: { backlog?: boolean }) {
   const s = useLibrary();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const cardWidth = (width - 64) / 3;
   const selected = games.filter(
@@ -32,12 +30,16 @@ export function LibraryScreen({ backlog = false }: { backlog?: boolean }) {
       contentInsetAdjustmentBehavior="never"
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
-        paddingTop:
-          Math.max(insets.top, process.env.EXPO_OS === "web" ? 48 : 0) + 10,
+        // NativeTabs already positions the scene below the top safe area.
+        // Adding the device inset here duplicated it and pushed the toolbar down.
+        paddingTop: process.env.EXPO_OS === "web" ? 58 : 10,
         paddingBottom: 140,
       }}
     >
-      <View className="mb-7 flex-row items-center justify-between px-4">
+      <View
+        className="flex-row items-center justify-between px-4"
+        style={{ marginBottom: backlog ? 8 : 28 }}
+      >
         <FilterMenu showView={!backlog} />
         {backlog && (
           <Text className="text-ink text-lg font-semibold">Play next</Text>
