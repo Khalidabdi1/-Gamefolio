@@ -1,293 +1,312 @@
 import { useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import {
+  Alert,
+  Linking,
+  Pressable,
   ScrollView,
+  Share,
   Text,
   View,
-  Pressable,
-  TextInput,
-  Alert,
-  Share,
 } from "react-native";
 import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Haptics from "expo-haptics";
 import { games, hero, emptyEntry } from "@/data/games";
 import { useLibrary } from "@/state/library";
-import { Cover } from "@/components/game-card";
 import { GlassButton } from "@/ui/glass-button";
+import { ActionMenu } from "@/ui/action-menu";
 import { Icon } from "@/ui/icon";
-import { ProgressControl } from "@/ui/progress-control";
-import { StatusPicker } from "@/ui/status-picker";
+import { DetailSections } from "@/components/detail-sections";
 export default function GameDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const game = games.find((g) => g.id === id);
   const s = useLibrary();
-  const [confirmRemove, setConfirmRemove] = useState(false);
   const insets = useSafeAreaInsets();
+  const [expanded, setExpanded] = useState(false);
+  const [logoFailed, setLogoFailed] = useState(false);
+  const [heroFailed, setHeroFailed] = useState(false);
   if (!game)
     return (
-      <View className="flex-1 items-center justify-center bg-canvas">
+      <View className="flex-1 bg-canvas items-center justify-center">
         <Text className="text-ink">Game not found</Text>
-        <Pressable onPress={() => router.replace("/")}>
-          <Text className="mt-5 text-coral">Back to library</Text>
-        </Pressable>
+        <GlassButton
+          icon="back"
+          label="Back"
+          onPress={() => router.replace("/")}
+        />
       </View>
     );
   const entry = s.entries[game.id];
   const current = entry ?? emptyEntry();
-  const update = (patch: Parameters<typeof s.update>[1]) => {
-    s.update(game.id, patch);
-    if (process.env.EXPO_OS === "ios") void Haptics.selectionAsync();
-  };
+  const edit = () => router.push(`/progress/${game.id}`);
+  const storeUrl = `https://store.steampowered.com/app/${game.steamId}/`;
   return (
-    <ScrollView
-      className="flex-1 bg-canvas"
-      keyboardShouldPersistTaps="handled"
-      contentInsetAdjustmentBehavior="never"
-      contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
-    >
-      <View style={{ height: 250, backgroundColor: "#282424" }}>
-        <Image
-          source={hero(game)}
-          contentFit="cover"
-          style={{ position: "absolute", inset: 0 }}
-        />
+    <View className="flex-1 bg-canvas">
+      <ScrollView
+        contentInsetAdjustmentBehavior="never"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+      >
         <View
           style={{
-            position: "absolute",
-            inset: 0,
-            backgroundColor: "#00000038",
+            height: 346,
+            backgroundColor: "#1c191a",
+            overflow: "hidden",
           }}
-        />
-        <View
-          className="flex-row justify-between px-4"
-          style={{ paddingTop: Math.max(insets.top, 48) + 10 }}
         >
-          <GlassButton
-            icon="back"
-            label="Back"
-            onPress={() =>
-              router.canGoBack() ? router.back() : router.replace("/")
-            }
+          {!heroFailed && (
+            <Image
+              source={hero(game)}
+              style={{ position: "absolute", inset: 0 }}
+              contentFit="cover"
+              onError={() => setHeroFailed(true)}
+            />
+          )}
+          <View
+            style={{
+              position: "absolute",
+              inset: 0,
+              experimental_backgroundImage:
+                "linear-gradient(180deg, rgba(12,10,11,0.05) 30%, #0c0a0b 100%)",
+            }}
           />
-          <GlassButton
-            icon="share"
-            label="Share game"
-            onPress={() =>
-              void Share.share({
-                message: `${game.title} — in my Gamefolio collection. https://store.steampowered.com/app/${game.steamId}/`,
-              })
-            }
-          />
-        </View>
-      </View>
-      <View className="px-5">
-        <View className="flex-row items-end gap-4" style={{ marginTop: -70 }}>
-          <Cover game={game} width={112} height={168} />
-          <View className="flex-1 pb-2">
-            <Text className="text-ink text-2xl font-bold">{game.title}</Text>
-            <Text className="mt-2 text-muted">
-              {game.year} · {game.genre}
-            </Text>
+          <View
+            style={{
+              position: "absolute",
+              bottom: 16,
+              left: 36,
+              right: 36,
+              height: 80,
+              justifyContent: "center",
+            }}
+          >
+            {logoFailed ? (
+              <Text
+                selectable
+                style={{
+                  color: "#f5f4f0",
+                  fontSize: 34,
+                  textAlign: "center",
+                  fontWeight: "800",
+                }}
+              >
+                {game.title}
+              </Text>
+            ) : (
+              <Image
+                accessibilityLabel={game.title}
+                source={`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steamId}/logo.png`}
+                onError={() => setLogoFailed(true)}
+                contentFit="contain"
+                style={{ width: "100%", height: 80 }}
+              />
+            )}
           </View>
         </View>
-        <Text className="mt-5 text-muted">{game.platforms}</Text>
-        <View className="my-6 flex-row items-center justify-between gap-3">
-          {entry ? (
-            <StatusPicker
-              value={entry.status}
-              onChange={(status) =>
-                update({
-                  status,
-                  ...(status === "completed" ? { progress: 100 } : {}),
-                })
-              }
-            />
-          ) : (
+        <View className="px-5">
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 12,
+              marginTop: 20,
+              marginBottom: 32,
+            }}
+          >
             <Pressable
               accessibilityRole="button"
-              onPress={() => update(emptyEntry())}
-              className="flex-row items-center gap-2 rounded-full bg-coral px-6 py-4"
+              accessibilityLabel={
+                current.favorite ? "Remove from favorites" : "Add to favorites"
+              }
+              onPress={() => s.update(game.id, { favorite: !current.favorite })}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                borderWidth: 1.5,
+                borderColor: current.favorite ? "#6dff65" : "#625a5e",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <Icon name="plus" color="#180e0b" size={20} />
-              <Text style={{ color: "#180e0b", fontWeight: "600" }}>
-                Add to library
+              <Icon
+                name="heart"
+                color={current.favorite ? "#6dff65" : "#928c8e"}
+              />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Edit game progress"
+              onPress={edit}
+              style={{
+                flex: 1,
+                borderWidth: 1.5,
+                borderColor: "#6a6265",
+                borderRadius: 28,
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                gap: 12,
+              }}
+            >
+              <Icon name={entry ? "check" : "plus"} />
+              <Text className="text-ink text-base font-semibold">
+                {entry ? `${current.progress}% completed` : "Add to library"}
               </Text>
             </Pressable>
-          )}
-          <GlassButton
-            icon="heart"
-            label={
-              current.favorite ? "Remove from favorites" : "Add to favorites"
+          </View>
+          <Text selectable className="text-muted text-base">
+            Released · {game.year} · ~{game.hoursToBeat}h to beat
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              expanded ? "Show less description" : "Show full description"
             }
-            onPress={() => update({ favorite: !current.favorite })}
-          />
-        </View>
-        {current.favorite && (
-          <Text className="mb-4 text-coral">♥ In your favorites</Text>
-        )}
-        <Text
-          selectable
-          className="text-ink"
-          style={{ fontSize: 16, lineHeight: 25 }}
-        >
-          {game.description}
-        </Text>
-        {entry && (
-          <>
-            <View className="mt-8 rounded-3xl bg-surface p-5">
-              <View className="mb-4 flex-row justify-between">
-                <Text className="text-ink text-lg font-semibold">
-                  Your progress
-                </Text>
-                <Text className="text-coral text-lg">{current.progress}%</Text>
-              </View>
-              <ProgressControl
-                value={current.progress}
-                onChange={(progress) =>
-                  update({
-                    progress,
-                    ...(progress === 100
-                      ? { status: "completed" as const }
-                      : current.status === "completed"
-                        ? { status: "playing" as const }
-                        : {}),
-                  })
-                }
-              />
-              <View className="mt-5 flex-row items-center justify-between">
-                <Text className="text-muted">Hours played</Text>
-                <View className="flex-row items-center gap-4">
-                  <Pressable
-                    accessibilityLabel="Remove one hour"
-                    onPress={() =>
-                      update({ hours: Math.max(0, current.hours - 1) })
-                    }
-                    className="rounded-full bg-raised px-4 py-2"
-                  >
-                    <Text className="text-ink text-lg">−</Text>
-                  </Pressable>
-                  <Text
-                    className="text-ink text-xl"
-                    style={{ fontVariant: ["tabular-nums"] }}
-                  >
-                    {current.hours}h
-                  </Text>
-                  <Pressable
-                    accessibilityLabel="Log one hour"
-                    onPress={() => update({ hours: current.hours + 1 })}
-                    className="rounded-full bg-raised px-4 py-2"
-                  >
-                    <Text className="text-ink text-lg">+</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-            <Text className="mb-3 mt-8 text-ink text-xl font-semibold">
-              Your rating
-            </Text>
-            <View className="flex-row gap-4">
-              {[1, 2, 3, 4, 5].map((rating) => (
-                <Pressable
-                  key={rating}
-                  accessibilityLabel={`Rate ${rating} stars`}
-                  accessibilityState={{ selected: current.rating === rating }}
-                  onPress={() =>
-                    update({ rating: current.rating === rating ? 0 : rating })
-                  }
-                  style={{ padding: 5 }}
-                >
-                  <Icon
-                    name="star"
-                    size={29}
-                    color={rating <= current.rating ? "#ff624f" : "#625a5e"}
-                  />
-                </Pressable>
-              ))}
-            </View>
-            <Text className="mb-3 mt-8 text-ink text-xl font-semibold">
-              Notes to self
-            </Text>
-            <TextInput
-              accessibilityLabel="Game notes"
-              multiline
-              placeholder="Where did you leave off?"
-              placeholderTextColor="#928c8e"
-              value={current.notes}
-              onChangeText={(notes) => s.update(game.id, { notes })}
+            onPress={() => setExpanded(!expanded)}
+          >
+            <Text
+              selectable
+              numberOfLines={expanded ? undefined : 4}
               style={{
-                minHeight: 110,
-                borderRadius: 20,
-                padding: 18,
-                backgroundColor: "#1c191a",
-                color: "#f5f4f0",
                 fontSize: 16,
-                textAlignVertical: "top",
-              }}
-            />
-            <Text className="mt-2 text-xs text-muted">
-              Saved automatically on this device
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              className="mt-8 items-center py-4"
-              onPress={() => {
-                if (process.env.EXPO_OS === "web") {
-                  setConfirmRemove(true);
-                } else
-                  Alert.alert(
-                    "Remove from library?",
-                    `Remove your progress and notes for ${game.title}?`,
-                    [
-                      { text: "Cancel", style: "cancel" },
-                      {
-                        text: "Remove",
-                        style: "destructive",
-                        onPress: () => {
-                          s.remove(game.id);
-                          router.canGoBack()
-                            ? router.back()
-                            : router.replace("/");
-                        },
-                      },
-                    ],
-                  );
+                lineHeight: 23,
+                color: "#f5f4f0",
+                marginTop: 10,
               }}
             >
-              <Text className="text-coral">Remove from library</Text>
-            </Pressable>
-            {confirmRemove && (
-              <View
-                accessibilityRole="alert"
-                className="gap-4 rounded-2xl bg-surface p-5"
+              {game.description}
+            </Text>
+            <Text className="text-muted mt-1">
+              {expanded ? "See less" : "See more"}
+            </Text>
+          </Pressable>
+          <Text selectable className="text-muted mt-3 text-base">
+            {game.genre} · {game.platforms}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 8,
+              marginTop: 16,
+              marginBottom: 24,
+            }}
+          >
+            {[
+              `★ ${current.rating ? current.rating + "/5" : "Not rated"}`,
+              `${current.hours}h played`,
+              current.favorite ? "♥ Favorite" : "Your library",
+            ].map((label) => (
+              <Pressable
+                key={label}
+                accessibilityRole="button"
+                onPress={edit}
+                style={{
+                  backgroundColor: "#1c191a",
+                  borderRadius: 24,
+                  paddingHorizontal: 13,
+                  minHeight: 36,
+                  justifyContent: "center",
+                }}
               >
-                <Text className="text-ink">
-                  Remove this game and its saved progress and notes?
+                <Text
+                  style={{
+                    color: label.startsWith("★") ? "#e5c66a" : "#928c8e",
+                    fontWeight: "600",
+                    fontSize: 13,
+                  }}
+                >
+                  {label}
                 </Text>
-                <View className="flex-row justify-end gap-6">
-                  <Pressable
-                    onPress={() => setConfirmRemove(false)}
-                    className="py-3"
-                  >
-                    <Text className="text-ink">Cancel</Text>
-                  </Pressable>
-                  <Pressable
-                    accessibilityLabel="Confirm remove game"
-                    onPress={() => {
-                      s.remove(game.id);
-                      router.canGoBack() ? router.back() : router.replace("/");
-                    }}
-                    className="py-3"
-                  >
-                    <Text className="text-coral">Remove</Text>
-                  </Pressable>
-                </View>
-              </View>
-            )}
-          </>
-        )}
+              </Pressable>
+            ))}
+          </View>
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel="Open Steam store"
+            onPress={() =>
+              void Linking.openURL(storeUrl).catch(() =>
+                Alert.alert(
+                  "Unable to open Steam",
+                  "Check your connection and try again.",
+                ),
+              )
+            }
+            style={{
+              borderTopWidth: 1,
+              borderBottomWidth: 1,
+              borderColor: "#302b2e",
+              paddingVertical: 20,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              className="text-ink text-base font-semibold"
+              style={{ flex: 1 }}
+            >
+              Where to play
+            </Text>
+            <Text className="text-muted mr-3">Steam store</Text>
+            <Icon name="right" size={18} color="#928c8e" />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open your review"
+            onPress={edit}
+            style={{
+              paddingVertical: 20,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              className="text-ink text-base font-semibold"
+              style={{ flex: 1 }}
+            >
+              Your review
+            </Text>
+            <Text className="text-muted mr-3">
+              {current.notes ? "Read & edit" : "Write a review"}
+            </Text>
+            <Icon name="right" size={18} color="#928c8e" />
+          </Pressable>
+          <DetailSections game={game} entry={current} />
+        </View>
+      </ScrollView>
+      <View
+        pointerEvents="box-none"
+        style={{
+          position: "absolute",
+          top: insets.top + 4,
+          left: 16,
+          right: 16,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <GlassButton
+          icon="back"
+          label="Back"
+          onPress={() =>
+            router.canGoBack() ? router.back() : router.replace("/")
+          }
+        />
+        <ActionMenu
+          label="Game options"
+          actions={[
+            {
+              label: "Share game",
+              onPress: () =>
+                void Share.share({ message: game.title + " — " + storeUrl }),
+            },
+            { label: "Edit progress & review", onPress: edit },
+            {
+              label: current.favorite ? "Remove favorite" : "Add favorite",
+              onPress: () => s.update(game.id, { favorite: !current.favorite }),
+            },
+          ]}
+        />
       </View>
-    </ScrollView>
+    </View>
   );
 }

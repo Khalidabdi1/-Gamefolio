@@ -19,6 +19,8 @@ export type Entry = {
   favorite: boolean;
   rating: number;
   notes: string;
+  goals?: string[];
+  activity?: Record<string, number>;
 };
 export const statuses: { id: Status; label: string }[] = [
   { id: "playing", label: "Play next" },

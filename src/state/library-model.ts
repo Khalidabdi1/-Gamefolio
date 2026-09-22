@@ -45,6 +45,27 @@ export function restore(raw: string): LibraryState {
       favorite: entry.favorite === true,
       rating: Math.round(boundedNumber(entry.rating, 0, 5)),
       notes: typeof entry.notes === "string" ? entry.notes : "",
+      ...(Array.isArray(entry.goals)
+        ? {
+            goals: entry.goals
+              .filter((x: unknown) => typeof x === "string")
+              .slice(0, 100),
+          }
+        : {}),
+      ...(entry.activity &&
+      typeof entry.activity === "object" &&
+      !Array.isArray(entry.activity)
+        ? {
+            activity: Object.fromEntries(
+              Object.entries(entry.activity)
+                .filter(([date]) => /^\d{4}-\d{2}-\d{2}$/.test(date))
+                .map(([date, hours]) => [
+                  date,
+                  boundedNumber(hours, 0, 1000000),
+                ]),
+            ),
+          }
+        : {}),
     };
   }
   return {
@@ -58,6 +79,25 @@ export function restore(raw: string): LibraryState {
     name: typeof saved.name === "string" ? saved.name : initial.name,
     handle: typeof saved.handle === "string" ? saved.handle : initial.handle,
   };
+}
+
+export function applyEntryPatch(
+  entry: Entry,
+  patch: Partial<Entry>,
+  now = new Date(),
+): Entry {
+  const next = { ...entry, ...patch };
+  if (patch.hours !== undefined && patch.hours !== entry.hours) {
+    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    next.activity = {
+      ...entry.activity,
+      [date]: Math.max(
+        0,
+        (entry.activity?.[date] ?? 0) + patch.hours - entry.hours,
+      ),
+    };
+  }
+  return next;
 }
 
 function boundedNumber(value: unknown, min: number, max: number) {

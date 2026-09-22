@@ -3,6 +3,8 @@ import {
   View,
   Text,
   Pressable,
+  Share,
+  Alert,
   useWindowDimensions,
 } from "react-native";
 import { Image } from "expo-image";
@@ -10,6 +12,7 @@ import { router } from "expo-router";
 import { useLibrary } from "@/state/library";
 import { games, hero } from "@/data/games";
 import { GlassButton } from "@/ui/glass-button";
+import { ActionMenu } from "@/ui/action-menu";
 import { Icon } from "@/ui/icon";
 import { GameCard } from "@/components/game-card";
 export default function Profile() {
@@ -44,10 +47,33 @@ export default function Profile() {
             label="Release calendar"
             onPress={() => router.push("/calendar")}
           />
-          <GlassButton
-            icon="more"
-            label="Edit profile"
-            onPress={() => router.push("/settings")}
+          <ActionMenu
+            label="Profile options"
+            actions={[
+              {
+                label: "Share profile",
+                onPress: () =>
+                  void Share.share({
+                    message: `${s.name} (@${s.handle}) on Gamefolio — ${library.length} games, ${hours} hours played.`,
+                  }),
+              },
+              {
+                label: "Your statistics",
+                onPress: () => router.push("/stats"),
+              },
+              {
+                label: "Edit profile",
+                onPress: () => router.push("/settings"),
+              },
+              {
+                label: "Help & ideas",
+                onPress: () =>
+                  Alert.alert(
+                    "Your Gamefolio",
+                    "Tap a game to track progress, log hours, save goals and write a review. Tap any statistics card to explore your play history. Your library is stored on this device.",
+                  ),
+              },
+            ]}
           />
         </View>
       </View>
@@ -115,8 +141,11 @@ export default function Profile() {
           ["COMPLETED", `${completed}`],
           ["COLLECTION", `${library.length}`],
         ].map(([label, value]) => (
-          <View
+          <Pressable
             key={label}
+            accessibilityRole="button"
+            accessibilityLabel={`Open ${label.toLowerCase()} statistics`}
+            onPress={() => router.push("/stats")}
             className="rounded-[18px] bg-surface px-4 py-4"
             style={{ width: 146, height: 94, justifyContent: "space-between" }}
           >
@@ -128,7 +157,7 @@ export default function Profile() {
             >
               {value}
             </Text>
-          </View>
+          </Pressable>
         ))}
       </ScrollView>
       {[

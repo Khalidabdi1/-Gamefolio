@@ -146,6 +146,16 @@ jobs:
             || agent-device press 42 74 --settle
           agent-device wait 1500
           capture filters
+          xcrun simctl openurl "$UDID" gamefolio://game/elden-ring
+          agent-device wait 4000
+          capture game-details
+          xcrun simctl openurl "$UDID" gamefolio://stats
+          agent-device wait 2500
+          capture statistics
+          xcrun simctl openurl "$UDID" gamefolio://profile
+          agent-device wait 2500
+          agent-device press 'label="Profile options"' --settle
+          capture profile-menu
           agent-device close
 
       - name: Upload visual evidence

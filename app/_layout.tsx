@@ -45,6 +45,11 @@ function Navigation() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="game/[id]" options={{ headerShown: false }} />
         <Stack.Screen
+          name="progress/[id]"
+          options={{ headerShown: false, presentation: "modal" }}
+        />
+        <Stack.Screen name="stats" options={{ title: "Stats" }} />
+        <Stack.Screen
           name="calendar"
           options={{ title: "Release calendar", presentation: "modal" }}
         />

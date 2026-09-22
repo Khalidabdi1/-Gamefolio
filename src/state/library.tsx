@@ -14,7 +14,12 @@ import {
   type ViewMode,
 } from "@/data/games";
 
-import { initial, restore, type LibraryState } from "./library-model";
+import {
+  initial,
+  restore,
+  applyEntryPatch,
+  type LibraryState,
+} from "./library-model";
 const KEY = "gamefolio.library.v1";
 type Store = LibraryState & {
   ready: boolean;
@@ -73,7 +78,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
             ...s,
             entries: {
               ...s.entries,
-              [id]: { ...(s.entries[id] ?? emptyEntry()), ...patch },
+              [id]: applyEntryPatch(s.entries[id] ?? emptyEntry(), patch),
             },
           })),
         remove: (id) =>
