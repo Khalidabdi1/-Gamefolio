@@ -138,7 +138,7 @@ jobs:
           agent-device press 'label="Open Elden Ring"' --settle
           agent-device wait 4000
           capture game-details
-          agent-device scroll bottom
+          agent-device scroll down --pixels 650
           agent-device wait 1500
           capture game-journey
           agent-device press 'label="Back"' --settle
@@ -149,10 +149,9 @@ jobs:
           agent-device press 'label="Open play time statistics"' --settle
           agent-device wait 2500
           capture statistics
-          agent-device scroll bottom
+          agent-device scroll down --pixels 600
           agent-device wait 1500
           capture statistics-genres
-          agent-device scroll top
           agent-device press 40 86 --settle
           tab Search 362
           capture search
