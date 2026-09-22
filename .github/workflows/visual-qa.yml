@@ -6,6 +6,12 @@ on:
     branches: [main]
     paths:
       - .github/workflows/visual-qa.yml
+      - app/**
+      - src/**
+      - assets/**
+      - app.json
+      - package.json
+      - package-lock.json
 
 permissions:
   contents: read
@@ -150,3 +156,7 @@ jobs:
           path: visual-qa
           if-no-files-found: warn
           retention-days: 7
+
+      - name: Shut down iOS simulator
+        if: always()
+        run: xcrun simctl shutdown all
