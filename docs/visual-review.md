@@ -1,10 +1,10 @@
-# Visual review — pending a live iOS session
+# Native iOS visual review
 
 ## Reference
 
 The supplied images show Bingers: TV & Movie Tracker (Onbox Labs), App Store ID 6792080029. The application is adapted for games, not video playback. Reference links: https://bingers.app/ and https://apps.apple.com/sa/app/bingers-tv-movie-tracker/id6792080029.
 
-The reference images are 709 × 1536. Compare at an iPhone content width of roughly 393 points, with default text size and dark appearance. Do not compare desktop web rendering as if it were native iOS.
+The reference images are 709 × 1536. The native comparison was performed in dark appearance on an iPhone 17 Pro simulator running iOS 26.0.
 
 ## Implemented design measurements
 
@@ -24,30 +24,39 @@ The reference images are 709 × 1536. Compare at an iPhone content width of roug
 | Section spacing | 40pt |
 | List row / poster width | 104pt / 69pt |
 | Profile banner / avatar | 242pt / 96pt |
-| Toolbar controls | native SwiftUI glass, large control size |
+| Toolbar controls | native SwiftUI glass, circular 48pt target |
 | Bottom navigation | system-native iOS 26 tabs, separate search role |
 
-## Required native checks
+## Captured screens
 
-1. Launch a clean install through `npm run sim` and capture Games, Backlog, Profile, Search and the expanded filter menu.
-2. Compare the cover bounds, section positions, font weights, toolbar margins and tab shape against the corresponding supplied reference image. The content should feature games.
-3. Confirm that native menus use the control-group view row, checked statuses and a Genre submenu. Switch all views and check filters.
-4. Verify Games scrolls beneath the floating native tab bar and no duplicate safe-area spacing appears.
-5. Add a game through Search. Change status, progress and hours; write notes and set a rating/favorite. Force-close and reopen to verify persistence.
-6. Mark a backlog game complete, enable Completed in the menu, and verify it is visible with completed styling.
-7. Verify the native slider, share sheet, removal confirmation and profile form. Confirm Back returns to the originating tab.
-8. Test a small iPhone, larger text and offline artwork failures. Keep 44pt touch targets and readable text.
-9. Compare the same views on iOS 26 or later. Earlier iOS versions cannot reproduce the same Liquid Glass material.
-10. Stop the session after testing; preserve screenshots and record the exact commit tested.
+| Games | Backlog | Profile |
+| --- | --- | --- |
+| ![Games](screenshots/games.png) | ![Backlog](screenshots/backlog.png) | ![Profile](screenshots/profile.png) |
+
+| Search | Native filter menu |
+| --- | --- |
+| ![Search](screenshots/search.png) | ![Filters](screenshots/filters.png) |
 
 ## Observed verification results
 
-- TypeScript: passed.
+- Tested commit: `1ec12ca302f195db0561a8be93d1b79e7e4bd76a`.
+- GitHub Actions run: `35681745444`, artifact `10675355742`.
+- Device: iPhone 17 Pro simulator, iOS 26.0.
+- Native app build, install and launch: passed.
+- Games, Backlog, Profile, Search and expanded filter menu screenshots: passed.
+- Accessibility snapshots: passed for all five screens.
+- TypeScript and formatting: passed.
 - Storage validation tests: 5 passed.
-- Expo web static export: passed.
-- Expo iOS Hermes bundle export: passed.
-- Native Xcode build / live iOS simulator: blocked, not executed.
-- Screenshots / visual matching: blocked, not executed.
-- GitHub push: rejected with HTTP 403 Resource not accessible by integration.
+- Explicit simulator shutdown: passed.
 
-No native screenshots are fabricated or included as evidence.
+The captured layout matches the reference proportions: 20pt page insets, three 2:3 covers per row, 12pt grid gaps, continuous card corners, floating native tabs and a separate search tab. The toolbar controls are circular 48pt SwiftUI glass buttons. The visible profile banner ends at 247pt on the test device, matching the scaled reference, with its avatar overlapping the lower edge.
+
+The filter is rendered with `@expo/ui/swift-ui`. Its glass popover, view selector, checked status rows and Genre disclosure match the native iOS menu shown in the reference. The bottom navigation is rendered by Expo Router Native Tabs and uses the iOS 26 system material.
+
+The `visual-qa.yml` workflow repeats this review for interface changes, uploads PNG screenshots and accessibility snapshots, then explicitly shuts down every booted iOS simulator.
+
+## Manual release checks
+
+1. Add a game through Search, change its status, progress, hours, notes and rating, then force-close and reopen to confirm persistence.
+2. Exercise the share sheet, removal confirmation and profile form on a physical device.
+3. Check a small iPhone, larger text and failed artwork requests while keeping 44pt touch targets.
