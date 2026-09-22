@@ -1,10 +1,9 @@
-import { Host, Menu, Button } from "@expo/ui/swift-ui";
+import { Host, Menu, Button, Image } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
   controlSize,
-  font,
   frame,
-  labelStyle,
+  accessibilityLabel,
   tint,
   clipShape,
 } from "@expo/ui/swift-ui/modifiers";
@@ -14,13 +13,18 @@ export function ActionMenu({ label, icon = "more", actions }: ActionMenuProps) {
   return (
     <Host matchContents colorScheme="dark">
       <Menu
-        label={label}
-        systemImage={symbols[icon]}
+        label={
+          <Image
+            systemName={symbols[icon]}
+            size={21}
+            color="#f5f4f0"
+            modifiers={[frame({ width: 48, height: 48 })]}
+          />
+        }
         modifiers={[
           buttonStyle("glass"),
           controlSize("large"),
-          font({ size: 21 }),
-          labelStyle("iconOnly"),
+          accessibilityLabel(label),
           tint("#f5f4f0"),
           frame({ width: 48, height: 48 }),
           clipShape("circle"),
