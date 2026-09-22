@@ -135,10 +135,25 @@ jobs:
           }
 
           capture games
+          agent-device press 'label="Open Elden Ring"' --settle
+          agent-device wait 4000
+          capture game-details
+          agent-device scroll bottom
+          agent-device wait 1500
+          capture game-journey
+          agent-device press 'label="Back"' --settle
           tab Backlog 150
           capture backlog
           tab Profile 252
           capture profile
+          agent-device press 'label="Open play time statistics"' --settle
+          agent-device wait 2500
+          capture statistics
+          agent-device scroll bottom
+          agent-device wait 1500
+          capture statistics-genres
+          agent-device scroll top
+          agent-device press 40 86 --settle
           tab Search 362
           capture search
           tab Games 55
@@ -146,17 +161,8 @@ jobs:
             || agent-device press 42 74 --settle
           agent-device wait 1500
           capture filters
-          agent-device press 354 620 --settle
-          agent-device press 'label="Open Elden Ring"' --settle
-          agent-device wait 4000
-          capture game-details
-          agent-device press 'label="Back"' --settle
+          agent-device press 355 250 --settle
           tab Profile 252
-          agent-device press 'label="Open play time statistics"' --settle
-          agent-device wait 2500
-          capture statistics
-          agent-device press 40 86 --settle
-          agent-device wait 2500
           agent-device press 'label="Profile options"' --settle
           capture profile-menu
           agent-device close
