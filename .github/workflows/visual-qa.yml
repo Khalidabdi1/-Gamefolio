@@ -146,13 +146,16 @@ jobs:
             || agent-device press 42 74 --settle
           agent-device wait 1500
           capture filters
-          xcrun simctl openurl "$UDID" gamefolio://game/elden-ring
+          agent-device press 354 620 --settle
+          agent-device press 'label="Open Elden Ring"' --settle
           agent-device wait 4000
           capture game-details
-          xcrun simctl openurl "$UDID" gamefolio://stats
+          agent-device press 'label="Back"' --settle
+          tab Profile 252
+          agent-device press 'label="Open play time statistics"' --settle
           agent-device wait 2500
           capture statistics
-          xcrun simctl openurl "$UDID" gamefolio://profile
+          agent-device press 40 86 --settle
           agent-device wait 2500
           agent-device press 'label="Profile options"' --settle
           capture profile-menu
