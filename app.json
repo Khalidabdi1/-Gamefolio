@@ -6,7 +6,7 @@
     "scheme": "gamefolio",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/gamefolio-logo.png",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.gamefolio.app"
