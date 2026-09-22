@@ -1,0 +1,152 @@
+name: Visual QA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/visual-qa.yml
+
+permissions:
+  contents: read
+
+jobs:
+  ios-screenshots:
+    runs-on: macos-26
+    timeout-minutes: 75
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Find native build cache key
+        id: fingerprint
+        run: |
+          HASH=$(npx --yes @expo/fingerprint fingerprint:generate --platform ios \
+            | node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(0,"utf8")).hash)')
+          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Restore native app
+        id: app-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: build/native-sim-app
+          key: native-sim-app-${{ runner.os }}-${{ steps.fingerprint.outputs.hash }}
+
+      - name: Boot iPhone simulator
+        id: simulator
+        run: |
+          UDID=$(xcrun simctl list devices available \
+            | grep -F 'iPhone 17 Pro (' \
+            | head -1 \
+            | sed -E 's/.*\(([0-9A-Fa-f-]{36})\).*/\1/' || true)
+          if [ -z "$UDID" ]; then
+            UDID=$(xcrun simctl list devices available \
+              | grep -E '^\s+iPhone' \
+              | tail -1 \
+              | sed -E 's/.*\(([0-9A-Fa-f-]{36})\).*/\1/')
+          fi
+          test -n "$UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Build app when cache is empty
+        if: steps.app-cache.outputs.cache-hit != 'true'
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          npx expo prebuild --platform ios --no-install
+          npx pod-install ios
+          WORKSPACE=$(find ios -maxdepth 1 -name '*.xcworkspace' | head -1)
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "id=$UDID" \
+            -derivedDataPath build/ios \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet \
+            build
+          APP=$(find build/ios/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' | head -1)
+          test -n "$APP"
+          rm -rf build/native-sim-app
+          mkdir -p build/native-sim-app
+          cp -R "$APP" build/native-sim-app/
+
+      - name: Save native app cache
+        if: steps.app-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: build/native-sim-app
+          key: native-sim-app-${{ runner.os }}-${{ steps.fingerprint.outputs.hash }}
+
+      - name: Install current Gamefolio build
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          APP=$(find build/native-sim-app -maxdepth 1 -name '*.app' | head -1)
+          test -n "$APP"
+          npx expo export:embed \
+            --platform ios \
+            --dev false \
+            --bundle-output "$APP/main.jsbundle" \
+            --assets-dest "$APP"
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" com.gamefolio.app
+
+      - name: Capture native iOS screens
+        env:
+          AGENT_DEVICE_SESSION: gamefolio-visual-qa
+          AGENT_DEVICE_PLATFORM: ios
+          UDID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          npm install -g agent-device@0.20.1
+          agent-device prepare ios-runner --platform ios --timeout 900000
+          agent-device open com.gamefolio.app --platform ios --serial "$UDID"
+          agent-device wait 8000
+          mkdir -p visual-qa
+
+          capture() {
+            agent-device screenshot "visual-qa/$1.png"
+            agent-device snapshot -i > "visual-qa/$1.txt"
+          }
+
+          tab() {
+            local label="$1"
+            local x="$2"
+            agent-device press "label=\"$label\"" --settle \
+              || agent-device press "$x" 825 --settle
+            agent-device wait 2500
+          }
+
+          capture games
+          tab Backlog 150
+          capture backlog
+          tab Profile 252
+          capture profile
+          tab Search 362
+          capture search
+          tab Games 55
+          agent-device press 'label="Filter and view"' --settle \
+            || agent-device press 42 74 --settle
+          agent-device wait 1500
+          capture filters
+          agent-device close
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamefolio-ios-visual-qa
+          path: visual-qa
+          if-no-files-found: warn
+          retention-days: 7
