@@ -30,9 +30,11 @@ export default function Profile() {
     >
       <View
         style={{
-          height: 242,
+          // The NativeTabs scene begins below the 56pt system inset. Keeping
+          // 186pt here produces the same 242pt visible banner as the reference.
+          height: process.env.EXPO_OS === "web" ? 242 : 186,
           backgroundColor: "#242122",
-          paddingTop: process.env.EXPO_OS === "web" ? 58 : 10,
+          paddingTop: process.env.EXPO_OS === "web" ? 58 : 0,
           paddingHorizontal: 16,
         }}
       >

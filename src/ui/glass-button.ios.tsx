@@ -1,8 +1,10 @@
 import { Host, Button } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
+  clipShape,
   controlSize,
   font,
+  frame,
   labelStyle,
   tint,
 } from "@expo/ui/swift-ui/modifiers";
@@ -21,6 +23,8 @@ export function GlassButton({ icon, label, onPress }: GlassButtonProps) {
           font({ size: 21, weight: "medium" }),
           labelStyle("iconOnly"),
           tint("#f5f4f0"),
+          frame({ width: 48, height: 48 }),
+          clipShape("circle"),
         ]}
       />
     </Host>

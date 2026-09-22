@@ -32,7 +32,7 @@ export function LibraryScreen({ backlog = false }: { backlog?: boolean }) {
       contentContainerStyle={{
         // NativeTabs already positions the scene below the top safe area.
         // Adding the device inset here duplicated it and pushed the toolbar down.
-        paddingTop: process.env.EXPO_OS === "web" ? 58 : 10,
+        paddingTop: process.env.EXPO_OS === "web" ? 58 : 0,
         paddingBottom: 140,
       }}
     >
